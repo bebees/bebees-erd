@@ -1,0 +1,355 @@
+-- 플레이스
+CREATE TABLE `PLACE` (
+	`id`        BIGINT       NOT NULL COMMENT '플레이스 일련번호', -- ID
+	`name`      VARCHAR(50)  NOT NULL COMMENT '플레이스 상호', -- 상호
+	`addr`      VARCHAR(255) NULL     COMMENT '주소', -- 주소
+	`phone_num` VARCHAR(30)  NULL     COMMENT '전화번', -- 전화번호
+	`lat`       VARCHAR(255) NOT NULL COMMENT '위도', -- 위도
+	`lon`       VARCHAR(255) NOT NULL COMMENT '경도', -- 경도
+	`visiable`  BIT(1)       NOT NULL DEFAULT 1 COMMENT '유해 게시물 심의로 보여줄지 안 보여줄지 여부. 0 안보임, 1 보임' -- Visiable
+)
+COMMENT '플레이스(장소) 정보 테이블';
+
+-- 플레이스
+ALTER TABLE `PLACE`
+	ADD CONSTRAINT `PK_PLACE` -- 플레이스 기본키
+		PRIMARY KEY (
+			`id` -- ID
+		);
+
+ALTER TABLE `PLACE`
+	MODIFY COLUMN `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '플레이스 일련번호';
+
+ALTER TABLE `PLACE`
+	AUTO_INCREMENT = 1;
+
+-- 사용자 플레이스
+CREATE TABLE `USER_PLACE` (
+	`id`          BIGINT   NOT NULL COMMENT '사용자 플레이스 일련번호', -- ID
+	`pl_id`       BIGINT   NOT NULL COMMENT '플레이스 일련번호', -- Place ID
+	`usr_id`      BIGINT   NOT NULL COMMENT '사용자 일련번호', -- 사용자ID
+	`regist_date` DATETIME NULL     COMMENT '사용자 플레이스 등록 일자' -- 등록날짜
+)
+COMMENT '사용자가 저장한 플레이스(콘텐츠) 정보 테이블';
+
+-- 사용자 플레이스
+ALTER TABLE `USER_PLACE`
+	ADD CONSTRAINT `PK_USER_PLACE` -- 사용자 플레이스 기본키
+		PRIMARY KEY (
+			`id` -- ID
+		);
+
+ALTER TABLE `USER_PLACE`
+	MODIFY COLUMN `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '사용자 플레이스 일련번호';
+
+ALTER TABLE `USER_PLACE`
+	AUTO_INCREMENT = 1;
+
+-- 사용자
+CREATE TABLE `USER` (
+	`idx`       BIGINT       NOT NULL COMMENT '사용자 일련번호', -- IDX
+	`id`        VARCHAR(255) NULL     COMMENT '사용자 아이디', -- ID
+	`name`      VARCHAR(50)  NOT NULL COMMENT '사용자 이름', -- 사용자명
+	`join_key`  VARCHAR(255) NULL     COMMENT 'OAuth 가입 시 식별 키', -- 가입키
+	`join_date` DATETIME     NOT NULL DEFAULT now() COMMENT '가입 일자', -- 가입일자
+	`last_date` DATETIME     NULL     COMMENT '최근 방문일', -- 마지막접속일자
+	`ban`       INTEGER      NOT NULL DEFAULT 0 COMMENT '경고 누적 횟수', -- Ban여부
+	`password`  VARCHAR(255) NULL     COMMENT '비밀번호호' -- 비밀번호
+)
+COMMENT '회원 정보 테이블';
+
+-- 사용자
+ALTER TABLE `USER`
+	ADD CONSTRAINT `PK_USER` -- 사용자 기본키
+		PRIMARY KEY (
+			`idx` -- IDX
+		);
+
+-- 사용자 유니크 인덱스
+CREATE UNIQUE INDEX `UIX_USER`
+	ON `USER` ( -- 사용자
+		`id` ASC -- ID
+	);
+
+ALTER TABLE `USER`
+	MODIFY COLUMN `idx` BIGINT NOT NULL AUTO_INCREMENT COMMENT '사용자 일련번호';
+
+ALTER TABLE `USER`
+	AUTO_INCREMENT = 1;
+
+-- 사용자 플레이스 태그
+CREATE TABLE `USR_PLACE_TAG` (
+	`id`        BIGINT      NOT NULL COMMENT '사용자 플레이스 태그 일련번호', -- ID
+	`usr_pl_id` BIGINT      NOT NULL COMMENT '사용자 플레이스 일련번호호', -- User Place ID
+	`tag`       VARCHAR(50) NULL     COMMENT '태그명' -- 태그명
+)
+COMMENT '사용자가 플레이스 등록 시 지정하는 태그 관리 테이블';
+
+-- 사용자 플레이스 태그
+ALTER TABLE `USR_PLACE_TAG`
+	ADD CONSTRAINT `PK_USR_PLACE_TAG` -- 사용자 플레이스 태그 기본키
+		PRIMARY KEY (
+			`id` -- ID
+		);
+
+ALTER TABLE `USR_PLACE_TAG`
+	MODIFY COLUMN `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '사용자 플레이스 태그 일련번호';
+
+ALTER TABLE `USR_PLACE_TAG`
+	AUTO_INCREMENT = 1;
+
+-- tag
+CREATE TABLE `TABLE5` (
+	`id`   BIGINT      NOT NULL COMMENT 'ID', -- ID
+	`name` VARCHAR(50) NOT NULL COMMENT '태그이름' -- 태그이름
+)
+COMMENT 'tag';
+
+-- tag
+ALTER TABLE `TABLE5`
+	ADD CONSTRAINT `PK_TABLE5` -- tag 기본키
+		PRIMARY KEY (
+			`id` -- ID
+		);
+
+-- 사용자 플레이스 메모
+CREATE TABLE `USR_PLACE_MEMO` (
+	`id`        BIGINT NOT NULL COMMENT '사용자 플레이스 메모 일련번호', -- ID
+	`memo`      TEXT   NOT NULL COMMENT '메모 내용', -- 메모
+	`usr_pl_id` BIGINT NULL     COMMENT '사용자 플레이스 일련번호', -- User Place ID
+	`private`   BIT(1) NOT NULL DEFAULT 1 COMMENT '플레이스 디테일 페이지에 사용자의 메모 비공개 여부. 0 : 공개, 1 : 비공개' -- 공개여부
+)
+COMMENT '사용자가 플레이스에 등록하는 메모 관리 테이블';
+
+-- 사용자 플레이스 메모
+ALTER TABLE `USR_PLACE_MEMO`
+	ADD CONSTRAINT `PK_USR_PLACE_MEMO` -- 사용자 플레이스 메모 기본키
+		PRIMARY KEY (
+			`id` -- ID
+		);
+
+ALTER TABLE `USR_PLACE_MEMO`
+	MODIFY COLUMN `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '사용자 플레이스 메모 일련번호';
+
+ALTER TABLE `USR_PLACE_MEMO`
+	AUTO_INCREMENT = 1;
+
+-- 사용자 플레이스 사진
+CREATE TABLE `USR_PLACE_PHOTO` (
+	`id`        BIGINT       NOT NULL COMMENT '사용자 플레이스 사진 일련번호', -- ID
+	`image_url` VARCHAR(255) NOT NULL COMMENT '사진 URL', -- 이미지URL
+	`usr_pl_id` BIGINT       NULL     COMMENT '사용자 플레이스 일련번호', -- User Place ID
+	`private`   BIT(1)       NOT NULL DEFAULT 1 COMMENT '플레이스 디테일 페이지에 사용자의 사진 비공개 여부. 0 : 공개, 1 : 비공' -- 공개여부
+)
+COMMENT '사용자가 플레이스에 등록하는 사진 관리 테이블';
+
+-- 사용자 플레이스 사진
+ALTER TABLE `USR_PLACE_PHOTO`
+	ADD CONSTRAINT `PK_USR_PLACE_PHOTO` -- 사용자 플레이스 사진 기본키
+		PRIMARY KEY (
+			`id` -- ID
+		);
+
+ALTER TABLE `USR_PLACE_PHOTO`
+	MODIFY COLUMN `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '사용자 플레이스 사진 일련번호';
+
+ALTER TABLE `USR_PLACE_PHOTO`
+	AUTO_INCREMENT = 1;
+
+-- 사용자 플레이스 스코어
+CREATE TABLE `USR_PLACE_SCORE` (
+	`id`        BIGINT  NOT NULL COMMENT '사용자 플레이스 스코어 일련번호', -- ID
+	`usr_pl_id` BIGINT  NOT NULL COMMENT '사용자 플레이스 일련번호', -- User Place ID
+	`tasty`     INTEGER NULL     COMMENT '맛 점수', -- 맛
+	`service`   INTEGER NULL     COMMENT '서비스 점수', -- 서비스
+	`location`  INTEGER NULL     COMMENT '접근성 점수', -- 위치
+	`private`   BIT(1)  NOT NULL DEFAULT 1 COMMENT '플레이스 디테일 페이지에 사용자의 스코어 비공개 여부. 0 : 공개, 1 : 비공개' -- 공개여부
+)
+COMMENT '사용자가 플레이스에 등록하는 스코어(별점) 관리 테이블';
+
+-- 사용자 플레이스 스코어
+ALTER TABLE `USR_PLACE_SCORE`
+	ADD CONSTRAINT `PK_USR_PLACE_SCORE` -- 사용자 플레이스 스코어 기본키
+		PRIMARY KEY (
+			`id` -- ID
+		);
+
+ALTER TABLE `USR_PLACE_SCORE`
+	MODIFY COLUMN `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '사용자 플레이스 스코어 일련번호';
+
+ALTER TABLE `USR_PLACE_SCORE`
+	AUTO_INCREMENT = 1;
+
+-- 크롤링 데이터
+CREATE TABLE `CRAWLING_PLACE` (
+	`id`   BIGINT       NOT NULL COMMENT '크롤링 데이터 일련번호', -- ID
+	`html` TEXT         NOT NULL COMMENT '크롤링 해 온 HTML', -- HTML
+	`url`  VARCHAR(255) NULL     COMMENT '크롤링 해 온 대상 URL' -- URL
+)
+COMMENT '크롤링 해 온 플레이스 정보 테이블';
+
+-- 크롤링 데이터
+ALTER TABLE `CRAWLING_PLACE`
+	ADD CONSTRAINT `PK_CRAWLING_PLACE` -- 크롤링 데이터 기본키
+		PRIMARY KEY (
+			`id` -- ID
+		);
+
+ALTER TABLE `CRAWLING_PLACE`
+	MODIFY COLUMN `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '크롤링 데이터 일련번호';
+
+ALTER TABLE `CRAWLING_PLACE`
+	AUTO_INCREMENT = 1;
+
+-- 크롤링 플레이스 메모
+CREATE TABLE `CRAWLING_PLACE_MEMO` (
+	`id`          BIGINT NOT NULL COMMENT '크롤링 플레이스 메모 일련번호', -- ID
+	`crawling_id` BIGINT NOT NULL COMMENT '크롤링 데이터 일련번호', -- Crawling ID
+	`memo`        TEXT   NOT NULL COMMENT '크롤링 해 온 플레이스 데이터 중 메모 내용' -- 내용
+)
+COMMENT '크롤링 해 온 플레이스 데이터 중 메모 관리 테이블';
+
+-- 크롤링 플레이스 메모
+ALTER TABLE `CRAWLING_PLACE_MEMO`
+	ADD CONSTRAINT `PK_CRAWLING_PLACE_MEMO` -- 크롤링 플레이스 메모 기본키
+		PRIMARY KEY (
+			`id` -- ID
+		);
+
+ALTER TABLE `CRAWLING_PLACE_MEMO`
+	MODIFY COLUMN `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '크롤링 플레이스 메모 일련번호';
+
+ALTER TABLE `CRAWLING_PLACE_MEMO`
+	AUTO_INCREMENT = 1;
+
+-- 크롤링 플레이스 스코어
+CREATE TABLE `CRAWLING_PLACE_SCORE` (
+	`id`          BIGINT  NOT NULL COMMENT '크롤링 플레이스 스코어 일련번호', -- ID
+	`crawling_id` BIGINT  NULL     COMMENT '크롤링 데이터 일련번호', -- Crawling ID
+	`score`       INTEGER NULL     COMMENT '크롤링 해 온 플레이스 데이터 중 스코어(별점)' -- 스코어
+)
+COMMENT '크롤링 해 온 플레이스 데이터 중 스코어(별점) 관리 테이블';
+
+-- 크롤링 플레이스 스코어
+ALTER TABLE `CRAWLING_PLACE_SCORE`
+	ADD CONSTRAINT `PK_CRAWLING_PLACE_SCORE` -- 크롤링 플레이스 스코어 기본키
+		PRIMARY KEY (
+			`id` -- ID
+		);
+
+ALTER TABLE `CRAWLING_PLACE_SCORE`
+	MODIFY COLUMN `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '크롤링 플레이스 스코어 일련번호';
+
+ALTER TABLE `CRAWLING_PLACE_SCORE`
+	AUTO_INCREMENT = 1;
+
+-- 크롤링 플레이스 사진
+CREATE TABLE `CRAWLING_PLACE_PHOTO` (
+	`id`          BIGINT       NOT NULL COMMENT '크롤링 플레이스 사진 일련번호', -- ID
+	`crawling_id` BIGINT       NULL     COMMENT '크롤링 데이터 일련번호', -- Crawling ID
+	`url`         VARCHAR(255) NULL     COMMENT '크롤링 해 온 플레이스 데이터 중 사진 URL' -- URL
+)
+COMMENT '크롤링 해 온 플레이스 데이터 중 사진 관리 테이블';
+
+-- 크롤링 플레이스 사진
+ALTER TABLE `CRAWLING_PLACE_PHOTO`
+	ADD CONSTRAINT `PK_CRAWLING_PLACE_PHOTO` -- 크롤링 플레이스 사진 기본키
+		PRIMARY KEY (
+			`id` -- ID
+		);
+
+ALTER TABLE `CRAWLING_PLACE_PHOTO`
+	MODIFY COLUMN `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '크롤링 플레이스 사진 일련번호';
+
+ALTER TABLE `CRAWLING_PLACE_PHOTO`
+	AUTO_INCREMENT = 1;
+
+-- 사용자 플레이스
+ALTER TABLE `USER_PLACE`
+	ADD CONSTRAINT `FK_PLACE_TO_USER_PLACE` -- 플레이스 -> 사용자 플레이스
+		FOREIGN KEY (
+			`pl_id` -- Place ID
+		)
+		REFERENCES `PLACE` ( -- 플레이스
+			`id` -- ID
+		);
+
+-- 사용자 플레이스
+ALTER TABLE `USER_PLACE`
+	ADD CONSTRAINT `FK_USER_TO_USER_PLACE` -- 사용자 -> 사용자 플레이스
+		FOREIGN KEY (
+			`usr_id` -- 사용자ID
+		)
+		REFERENCES `USER` ( -- 사용자
+			`idx` -- IDX
+		);
+
+-- 사용자 플레이스 태그
+ALTER TABLE `USR_PLACE_TAG`
+	ADD CONSTRAINT `FK_USER_PLACE_TO_USR_PLACE_TAG` -- 사용자 플레이스 -> 사용자 플레이스 태그
+		FOREIGN KEY (
+			`usr_pl_id` -- User Place ID
+		)
+		REFERENCES `USER_PLACE` ( -- 사용자 플레이스
+			`id` -- ID
+		);
+
+-- 사용자 플레이스 메모
+ALTER TABLE `USR_PLACE_MEMO`
+	ADD CONSTRAINT `FK_USER_PLACE_TO_USR_PLACE_MEMO` -- 사용자 플레이스 -> 사용자 플레이스 메모
+		FOREIGN KEY (
+			`usr_pl_id` -- User Place ID
+		)
+		REFERENCES `USER_PLACE` ( -- 사용자 플레이스
+			`id` -- ID
+		);
+
+-- 사용자 플레이스 사진
+ALTER TABLE `USR_PLACE_PHOTO`
+	ADD CONSTRAINT `FK_USER_PLACE_TO_USR_PLACE_PHOTO` -- 사용자 플레이스 -> 사용자 플레이스 사진
+		FOREIGN KEY (
+			`usr_pl_id` -- User Place ID
+		)
+		REFERENCES `USER_PLACE` ( -- 사용자 플레이스
+			`id` -- ID
+		);
+
+-- 사용자 플레이스 스코어
+ALTER TABLE `USR_PLACE_SCORE`
+	ADD CONSTRAINT `FK_USER_PLACE_TO_USR_PLACE_SCORE` -- 사용자 플레이스 -> 사용자 플레이스 스코어
+		FOREIGN KEY (
+			`usr_pl_id` -- User Place ID
+		)
+		REFERENCES `USER_PLACE` ( -- 사용자 플레이스
+			`id` -- ID
+		);
+
+-- 크롤링 플레이스 메모
+ALTER TABLE `CRAWLING_PLACE_MEMO`
+	ADD CONSTRAINT `FK_CRAWLING_PLACE_TO_CRAWLING_PLACE_MEMO` -- 크롤링 데이터 -> 크롤링 플레이스 메모
+		FOREIGN KEY (
+			`crawling_id` -- Crawling ID
+		)
+		REFERENCES `CRAWLING_PLACE` ( -- 크롤링 데이터
+			`id` -- ID
+		);
+
+-- 크롤링 플레이스 스코어
+ALTER TABLE `CRAWLING_PLACE_SCORE`
+	ADD CONSTRAINT `FK_CRAWLING_PLACE_TO_CRAWLING_PLACE_SCORE` -- 크롤링 데이터 -> 크롤링 플레이스 스코어
+		FOREIGN KEY (
+			`crawling_id` -- Crawling ID
+		)
+		REFERENCES `CRAWLING_PLACE` ( -- 크롤링 데이터
+			`id` -- ID
+		);
+
+-- 크롤링 플레이스 사진
+ALTER TABLE `CRAWLING_PLACE_PHOTO`
+	ADD CONSTRAINT `FK_CRAWLING_PLACE_TO_CRAWLING_PLACE_PHOTO` -- 크롤링 데이터 -> 크롤링 플레이스 사진
+		FOREIGN KEY (
+			`crawling_id` -- Crawling ID
+		)
+		REFERENCES `CRAWLING_PLACE` ( -- 크롤링 데이터
+			`id` -- ID
+		);
